@@ -3,18 +3,18 @@ package Diario_Virtual;
 public class Usuario {
     private String username;
     private String senha;
-    private boolean ehADM;
+    private boolean isAdmin;
  
-    public Usuario(String username, String senha, boolean ehADM) {
+    public Usuario(String username, String senha, boolean isAdmin) {
         this.username = username;
         this.senha = senha;
-        this.ehADM = ehADM;
+        this.isAdmin = isAdmin;
     }
-    public boolean ehADM(){
-    	return ehADM;
+    public boolean isAdmin(){
+    	return isAdmin;
     }
-    public void souADM(boolean ehADM){
-    	this.ehADM = ehADM;
+    public void setADM(boolean isAdmin){
+    	this.isAdmin = isAdmin;
     }
     public String getUsername() {
     	return username;
