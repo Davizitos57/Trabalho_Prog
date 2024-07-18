@@ -1,4 +1,5 @@
 package Diario_Virtual;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -7,32 +8,48 @@ import java.util.List;
 public class Diario {
 	private List<String> entradas;
 	private List<Usuario> usuarios;
-
+	
     public Diario() {
         this.entradas = new ArrayList<>();
         this.usuarios = new ArrayList<>();
+        Usuario admin = new Usuario("TallesProfessor", "ProfessorUFOP", true);
+        usuarios.add(admin);
     }
-    public void registrarUsuario(String username, String senha, boolean ehADM) {
-        Usuario usuario = new Usuario(username, senha, false);
+    
+    public void registrarUsuario(String username, String senha, boolean isAdmin) {
+        Usuario usuario = new Usuario(username, senha, isAdmin);
         usuarios.add(usuario);
     }
     
-    public boolean autenticarUsuario(String username, String senha) {
+    public Usuario autenticarUsuario(String username, String senha) {
         for (Usuario usuario : usuarios) {
             if (usuario.getUsername().equals(username) && usuario.getSenha().equals(senha)) {
-                return true;
+                return usuario;
             }
         }
-        return false;
-    }       
+        return null;
+    }     
 
     public void adicionarEntrada(String entrada) {
         LocalDateTime agora = LocalDateTime.now();
         DateTimeFormatter formatador = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         String dataFormatada = agora.format(formatador);
         entradas.add(dataFormatada + " - " + entrada);
-    }
+    }	
 
+	public List<Usuario> getUsuarios() {
+		return usuarios;
+	}
+
+	public void visualizarEntradasAdmin() {
+    	if (entradas.isEmpty()) {
+            System.out.println("O diário está vazio.");
+        } else {
+            System.out.println("Entradas do Diário:");
+            entradas.forEach(System.out::println);
+        }
+    }
+    
     public void visualizarEntradas() {
         if (entradas.isEmpty()) {
             System.out.println("O diário está vazio.");
