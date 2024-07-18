@@ -1,10 +1,12 @@
 package Diario_Virtual;
+
 import java.util.Scanner;
 
 public class Principal {
 	public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         Diario diario = new Diario();
+        Usuario usuarioLogado = null;
         boolean autenticado_usuario = false;
         
         while (!autenticado_usuario) {
@@ -26,18 +28,25 @@ public class Principal {
 				String username = scanner.nextLine();
 				System.out.print("Senha: ");
 				String senha = scanner.nextLine();
-				autenticado_usuario = diario.autenticarUsuario(username, senha);
-				if (autenticado_usuario) {
+				usuarioLogado = diario.autenticarUsuario(username, senha);
+				if (usuarioLogado != null) {
+					autenticado_usuario = true;
 					System.out.println("Login bem-sucedido!\n");
 				} 
 				else {
 					System.out.println("Login falhou. Tente novamente.\n");
 				}
 			}
+			else{
+				System.out.print("Desculpa, não entendemos o que você digitou, TENTE NOVAMENTE!\n\n");
+			}
 		}
         
         while (true) {
             System.out.println("\nDiário de Bordo");
+            if (usuarioLogado.isAdmin()) {
+            	System.out.println("0. ADM Visualizar Entradas");
+            }
             System.out.println("1. Adicionar Entrada");
             System.out.println("2. Visualizar Entradas");
             System.out.println("3. Pesquisar Entradas");
@@ -48,6 +57,9 @@ public class Principal {
             String opcao = scanner.nextLine();
 
             switch (opcao) {
+            	case "0":
+            		diario.visualizarEntradasAdmin();
+                break;
                 case "1":
                     System.out.println("Escreva sua entrada (linha em branco para terminar):");
                     StringBuilder entrada = new StringBuilder();
@@ -58,7 +70,7 @@ public class Principal {
                     diario.adicionarEntrada(entrada.toString().trim());
                     break;
                 case "2":
-                    diario.visualizarEntradas();
+                	diario.visualizarEntradas();
                     break;
                 case "3":
                     System.out.print("Digite a palavra-chave para pesquisar: ");
@@ -69,18 +81,10 @@ public class Principal {
                 	int Qntd_Palavras = diario.contarPalavrasTotais();
                 	if(Qntd_Palavras == -3) {
                 		Qntd_Palavras = 0;
-                		System.out.print("O total de palavras escritas na entrada são: " + Qntd_Palavras);
+                		System.out.print("Não há entradas escritas no diário\n");
                 	}
-                	else if(Qntd_Palavras == -2) {
-                		Qntd_Palavras = 1;
-                		System.out.print("O total de palavras escritas na entrada são: " + Qntd_Palavras);
-                	}
-                	else if(Qntd_Palavras == -1) {
-                		Qntd_Palavras = 2;
-                		System.out.print("O total de palavras escritas na entrada são: " + Qntd_Palavras);
-                	}
-                	else{
-                		System.out.print("O total de palavras escritas na entrada são: " + Qntd_Palavras);
+                	else {
+                		System.out.print("\nHá " + Qntd_Palavras + " palavra(s) escrita(s) no diário.");
                 	}
                 	break;
                 case "5":
