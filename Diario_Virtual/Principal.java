@@ -8,8 +8,11 @@ public class Principal {
         Diario diario = new Diario();
         Usuario usuarioLogado = null;
         boolean autenticado_usuario = false;
-        
+        boolean rodando = true;
+       
+    while(rodando){
         while (!autenticado_usuario) {
+        	System.out.println("Olá, seja bem vindo ao Diário Virtual!");
 			System.out.println("1. Registrar novo usuário");
 			System.out.println("2. Login");
 			System.out.print("Escolha uma opção: ");
@@ -32,6 +35,7 @@ public class Principal {
 				if (usuarioLogado != null) {
 					autenticado_usuario = true;
 					System.out.println("Login bem-sucedido!\n");
+					Diario.login(usuarioLogado);
 				} 
 				else {
 					System.out.println("Login falhou. Tente novamente.\n");
@@ -40,9 +44,9 @@ public class Principal {
 			else{
 				System.out.print("Desculpa, não entendemos o que você digitou, TENTE NOVAMENTE!\n\n");
 			}
-		}
+        }
         
-        while (true) {
+        while(autenticado_usuario){
             System.out.println("\nDiário de Bordo");
             if (usuarioLogado.isAdmin()) {
             	System.out.println("0. ADM Visualizar Entradas");
@@ -51,7 +55,8 @@ public class Principal {
             System.out.println("2. Visualizar Entradas");
             System.out.println("3. Pesquisar Entradas");
             System.out.println("4. Contar Palavras nas Entradas");
-            System.out.println("5. Sair");
+            System.out.println("5. Logout");
+            System.out.println("6. Sair do Diário");
             System.out.print("Escolha uma opção: ");
             
             String opcao = scanner.nextLine();
@@ -79,8 +84,7 @@ public class Principal {
                     break;
                 case "4":
                 	int Qntd_Palavras = diario.contarPalavrasTotais();
-                	if(Qntd_Palavras == -3) {
-                		Qntd_Palavras = 0;
+                	if(Qntd_Palavras == 0){
                 		System.out.print("Não há entradas escritas no diário\n");
                 	}
                 	else {
@@ -88,12 +92,21 @@ public class Principal {
                 	}
                 	break;
                 case "5":
-                    System.out.println("Saindo do Diário de Bordo...");
-                    return;
+                    Diario.logout();
+                    autenticado_usuario = false;
+                    break;
+                case "6":
+                	Diario.logout();
+                	autenticado_usuario = false;
+                	rodando = false;
+                	System.out.println("Saindo do Diário de Bordo...\n");
+                	break;
                 default:
                     System.out.println("Opção inválida. Tente novamente.");
                     break;
-            }
-        }
-    }
+        		}
+        	}
+		}
+    scanner.close();
+	}
 }
