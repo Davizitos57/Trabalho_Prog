@@ -13,7 +13,7 @@ public class Diario {
     public Diario() {
         this.entradas = new ArrayList<>();
         this.usuarios = new ArrayList<>();
-        Usuario admin = new Usuario("TallesProfessor", "ProfessorUFOP", true);
+        Usuario admin = new Usuario("adm", "adm", true);
         usuarios.add(admin);
     }
     
@@ -30,10 +30,13 @@ public class Diario {
     	    this.dataHora = agora.format(formatador);
     		
     	}
+    	public void setTexto(String texto) {
+			this.texto = texto;
+		}
     	public String getTexto() {
     		return texto;
     	}
-    	public Usuario getAutor() {
+		public Usuario getAutor() {
     		return autor;
     	}
     	public String toString() {
@@ -42,9 +45,21 @@ public class Diario {
     }
     
     public void registrarUsuario(String username, String senha, boolean isAdmin) {
-        Usuario usuario = new Usuario(username, senha, isAdmin);
-        usuarios.add(usuario);
-    }
+    	boolean nomeDoUsuarioExiste = false;
+        for (Usuario u : usuarios) {
+	        if (u.getUsername().equals(username)) {
+	        	nomeDoUsuarioExiste = true;
+	        	break;
+	        	}
+	        }
+        	if (nomeDoUsuarioExiste) {
+        		System.out.println("\nEste nome de usuario já esta sendo utilizado, por favor escolha outro.\n");
+        	} else {
+	    			Usuario usuario = new Usuario(username, senha, isAdmin);
+		        	usuarios.add(usuario);
+		        	System.out.println("\nUsuário registrado com sucesso!\n");
+		        	}
+   }
     
     public Usuario autenticarUsuario(String username, String senha) {
         for (Usuario usuario : usuarios) {
@@ -81,37 +96,103 @@ public class Diario {
 
 	public void visualizarEntradasAdmin() {
     	if (entradas.isEmpty()) {
-            System.out.println("O diário está vazio.");
+            System.out.println("\nO diário está vazio.");
         } else {
-            System.out.println("Entradas do Diário:");
+            System.out.println("\nEntradas do Diário:");
             entradas.forEach(System.out::println);
         }
     }
-    
-    public void visualizarEntradas() {
-        if (entradas.isEmpty()) {
-            System.out.println("O diário está vazio.");
-        } else {
-            System.out.println("Entradas do Diário:");
-            entradas.forEach(System.out::println);
+	
+	public void substituirEntradasAdmin (String usuario, String novaEntrada) {
+		boolean nomeDoUsuarioExiste = false;
+		for (int i = entradas.size() - 1; i >= 0; i--) {
+			EntradaDiario entrada = entradas.get(i);
+        	if (entrada.getAutor().getUsername().equals(usuario)) {
+        		entrada.setTexto(novaEntrada);
+        		nomeDoUsuarioExiste = true;
+        		System.out.println("Entrada editada com sucesso.");
+        		break;
+        	}
         }
+        	if (!nomeDoUsuarioExiste) {
+        		System.out.println("Usuario inválido ou não há entradas para sobrescrever");
+        	}   
+        	
+	}
+	
+	public void deletarEntradasAdmin (String usuario) {
+		boolean nomeDoUsuarioExiste = false;
+		List<EntradaDiario> removerEntradas =  new ArrayList<>();
+		 for (int i = entradas.size() - 1; i >= 0; i--) {
+		    EntradaDiario entrada = entradas.get(i);
+        	if (entrada.getAutor().getUsername().equals(usuario)) {
+        		removerEntradas.add(entrada);
+        		nomeDoUsuarioExiste = true;
+        		break;
+        	}
+        }
+        entradas.removeAll(removerEntradas);
+        
+        	if (nomeDoUsuarioExiste) {
+        		System.out.println("Entradas removidas.");
+        	} else {
+        		System.out.println("Usuario inválido ou o diario esta vazio.");
+        	}
+
+	}
+	
+	public void sobrescreverEntradasAdmin (String usuario, String novaEntrada) {
+		boolean nomeDoUsuarioExiste = false;
+		 for (int i = entradas.size() - 1; i >= 0; i--) {
+		    EntradaDiario entrada = entradas.get(i);
+        	if (entrada.getAutor().getUsername().equals(usuario)) {
+        		entrada.setTexto(entrada.getTexto() + novaEntrada);
+        		nomeDoUsuarioExiste = true;
+        		System.out.println("Entrada editada com sucesso.");
+        		break;
+        	}
+        }
+        	if (!nomeDoUsuarioExiste) {
+        		System.out.println("Usuario inválido");
+        	}   
+        	
+	}
+	
+    public void visualizarEntradas() {
+        boolean entradaEcontrada = false;
+        for (EntradaDiario entrada : entradas) {
+            if (entrada.getAutor().equals(usuarioAtual)) {
+                if (!entradaEcontrada) {
+                    System.out.println("\nEntradas do Diário:");
+                    entradaEcontrada = true;
+                }
+                System.out.println(entrada);
+            }
+        }
+        if (!entradaEcontrada) {
+            System.out.println("\nVocê não possui entradas no diário.");
+        }
+        
     }
 
     public void pesquisarEntradas(String palavraChave) {
         boolean encontrou = false;
         for (EntradaDiario entrada : entradas) {
-            if (entrada.getTexto().toLowerCase().contains(palavraChave.toLowerCase())) {
-                if (!encontrou) {
-                    System.out.println("Entradas encontradas:");
-                    encontrou = true;
-                }
-                System.out.println(entrada);
-            }
+        	if (entrada.getAutor().equals(usuarioAtual)) {
+	            if (entrada.getTexto().toLowerCase().contains(palavraChave.toLowerCase())) {
+	                if (!encontrou) {
+	                    System.out.println("Entradas encontradas:");
+	                    encontrou = true;
+	                }
+	                System.out.println(entrada);
+	            }
+        	}
         }
         if (!encontrou) {
             System.out.println("Nenhuma entrada encontrada com a palavra-chave: " + palavraChave);
         }
     }
+    
     public int contarPalavrasDeEntrada(String entrada) {
     	if(entrada == null || entrada.isEmpty()) {
     		return 0;
@@ -123,8 +204,12 @@ public class Diario {
     public int contarPalavrasTotais() {
         int totalDePalavras = 0;
         for (EntradaDiario entrada : entradas) {
-            totalDePalavras += contarPalavrasDeEntrada(entrada.getTexto());
+        	if (entrada.getAutor().equals(usuarioAtual)) {
+        		totalDePalavras += contarPalavrasDeEntrada(entrada.getTexto());
+        	}
         }
         return totalDePalavras;
     }
+    
+    
 }
